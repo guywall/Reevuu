@@ -308,7 +308,7 @@ class RRP_Public
         $atts = shortcode_atts(
             array(
                 'target_id' => $this->repository->get_default_target_id(),
-                'title'     => __('Leave a review', 'reevuu-reviews'),
+                'title'     => '',
             ),
             $atts,
             'reevuu_reviews_form'
@@ -328,7 +328,9 @@ class RRP_Public
         ob_start();
         ?>
         <div class="rrp-form-wrap">
-            <h2><?php echo esc_html($atts['title']); ?></h2>
+            <?php if ('' !== trim((string) $atts['title'])) : ?>
+                <h2><?php echo esc_html($atts['title']); ?></h2>
+            <?php endif; ?>
             <?php $this->render_submission_notice(); ?>
             <form class="rrp-review-form" method="post" enctype="multipart/form-data">
                 <?php wp_nonce_field('rrp_submit_review', 'rrp_nonce'); ?>

@@ -44,6 +44,13 @@
     flex-wrap: wrap;
 }
 
+.rrp-list-controls .rrp-button {
+    background: var(--rrp-accent, #1f6f5f);
+    color: #fff;
+    border: 1px solid var(--rrp-accent, #1f6f5f);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
 .rrp-field,
 .rrp-rating-field,
 .rrp-consent,
@@ -151,6 +158,12 @@
 
 .rrp-button-secondary {
     background: #334155;
+}
+
+.rrp-results-count {
+    margin: 6px 0 18px;
+    color: #64748b;
+    font-size: 14px;
 }
 
 .rrp-notice {
@@ -311,9 +324,10 @@
     padding: 6px 12px;
     border-radius: 999px;
     background: #d1fae5;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.2;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .rrp-answer-line {
@@ -408,6 +422,23 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .rrp-list-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .rrp-list-controls .rrp-button {
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    .rrp-results-count {
+        margin: 4px 0 14px;
+        font-size: 13px;
+    }
+
     .rrp-table-scroll {
         overflow: visible;
     }
@@ -440,28 +471,32 @@
     }
 
     .rrp-review-table-public tr {
-        margin-bottom: 20px;
-        padding: 18px;
-        border: 1px solid rgba(148, 163, 184, 0.28);
-        border-radius: 22px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(120px, auto);
+        gap: 12px 16px;
+        margin-bottom: 16px;
+        padding: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 20px;
         background: var(--rrp-card-bg, #ffffff);
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
     }
 
     .rrp-review-table-public td {
-        padding: 14px 0;
+        padding: 0;
         border: none;
         background: transparent;
     }
 
-    .rrp-review-table-public td + td {
-        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    .rrp-review-table-public td:nth-child(1),
+    .rrp-review-table-public td:nth-child(4) {
+        grid-column: 1 / -1;
     }
 
     .rrp-review-table-public td::before {
         content: attr(data-label);
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
@@ -470,32 +505,32 @@
     }
 
     .rrp-reviewer-cell {
-        gap: 14px;
+        gap: 12px;
     }
 
     .rrp-avatar {
-        width: 50px;
-        height: 50px;
-        flex: 0 0 50px;
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
     }
 
     .rrp-reviewer-cell > div {
-        gap: 8px;
+        gap: 6px;
     }
 
     .rrp-verified {
-        padding: 8px 14px;
-        font-size: 13px;
+        padding: 6px 12px;
+        font-size: 11px;
     }
 
     .rrp-answer-line {
-        margin-top: 12px;
+        margin-top: 8px;
     }
 
     .rrp-review-response {
-        margin-top: 18px;
-        padding: 16px;
-        border-radius: 16px;
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 14px;
     }
 
     .rrp-summary-card {
