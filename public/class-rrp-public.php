@@ -317,6 +317,13 @@ class RRP_Public
         $questions = apply_filters('rrp_review_questions', $this->repository->get_question_definitions(true));
         $settings = $this->settings->get_all();
         $errors = $this->submission_result['errors'] ?? array();
+        $form_uid = wp_unique_id('rrp-form-');
+        $reviewer_name_id = $form_uid . '-reviewer-name';
+        $reviewer_email_id = $form_uid . '-reviewer-email';
+        $review_title_id = $form_uid . '-review-title';
+        $review_content_id = $form_uid . '-review-content';
+        $images_id = $form_uid . '-images';
+        $consent_id = $form_uid . '-consent';
 
         ob_start();
         ?>
@@ -329,33 +336,34 @@ class RRP_Public
                 <input type="hidden" name="target_id" value="<?php echo esc_attr((string) $atts['target_id']); ?>" />
 
                 <div class="rrp-form-grid">
-                    <label class="<?php echo isset($errors['reviewer_name']) ? 'has-error' : ''; ?>">
+                    <label class="rrp-field <?php echo isset($errors['reviewer_name']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($reviewer_name_id); ?>">
                         <span><?php esc_html_e('Your name', 'reevuu-reviews'); ?></span>
-                        <input type="text" name="reviewer_name" value="<?php echo esc_attr($this->submitted_value('reviewer_name')); ?>" required />
+                        <input id="<?php echo esc_attr($reviewer_name_id); ?>" type="text" name="reviewer_name" value="<?php echo esc_attr($this->submitted_value('reviewer_name')); ?>" required />
                         <?php $this->render_error('reviewer_name'); ?>
                     </label>
 
-                    <label class="<?php echo isset($errors['reviewer_email']) ? 'has-error' : ''; ?>">
+                    <label class="rrp-field <?php echo isset($errors['reviewer_email']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($reviewer_email_id); ?>">
                         <span><?php esc_html_e('Your email', 'reevuu-reviews'); ?></span>
-                        <input type="email" name="reviewer_email" value="<?php echo esc_attr($this->submitted_value('reviewer_email')); ?>" required />
+                        <input id="<?php echo esc_attr($reviewer_email_id); ?>" type="email" name="reviewer_email" value="<?php echo esc_attr($this->submitted_value('reviewer_email')); ?>" required />
                         <?php $this->render_error('reviewer_email'); ?>
                     </label>
                 </div>
 
-                <label class="<?php echo isset($errors['review_title']) ? 'has-error' : ''; ?>">
+                <label class="rrp-field <?php echo isset($errors['review_title']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($review_title_id); ?>">
                     <span><?php echo esc_html($settings['review_title_label']); ?></span>
-                    <input type="text" name="review_title" value="<?php echo esc_attr($this->submitted_value('review_title')); ?>" <?php echo $settings['review_title_required'] ? 'required' : ''; ?> />
+                    <input id="<?php echo esc_attr($review_title_id); ?>" type="text" name="review_title" value="<?php echo esc_attr($this->submitted_value('review_title')); ?>" <?php echo $settings['review_title_required'] ? 'required' : ''; ?> />
                     <?php $this->render_error('review_title'); ?>
                 </label>
 
-                <label class="<?php echo isset($errors['review_content']) ? 'has-error' : ''; ?>">
+                <label class="rrp-field <?php echo isset($errors['review_content']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($review_content_id); ?>">
                     <span><?php echo esc_html($settings['review_content_label']); ?></span>
-                    <textarea name="review_content" rows="5" <?php echo $settings['review_content_required'] ? 'required' : ''; ?>><?php echo esc_textarea($this->submitted_value('review_content')); ?></textarea>
+                    <textarea id="<?php echo esc_attr($review_content_id); ?>" name="review_content" rows="5" <?php echo $settings['review_content_required'] ? 'required' : ''; ?>><?php echo esc_textarea($this->submitted_value('review_content')); ?></textarea>
                     <?php $this->render_error('review_content'); ?>
                 </label>
 
                 <?php foreach ($questions as $question) : ?>
                     <?php $field_name = 'question_' . $question['question_key']; ?>
+                    <?php $field_id = $form_uid . '-' . sanitize_html_class($field_name); ?>
                     <?php if ('rating' === $question['type']) : ?>
                         <fieldset class="rrp-rating-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>">
                             <legend><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></legend>
@@ -364,19 +372,19 @@ class RRP_Public
                             <?php endif; ?>
                             <div class="rrp-stars-input" data-target="<?php echo esc_attr($field_name); ?>">
                                 <?php for ($rating = 5; $rating >= 1; $rating--) : ?>
-                                    <input type="radio" id="<?php echo esc_attr($field_name . '_' . $rating); ?>" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr((string) $rating); ?>" <?php checked((int) $this->submitted_value($field_name), $rating); ?> />
-                                    <label for="<?php echo esc_attr($field_name . '_' . $rating); ?>">&#9733;</label>
+                                    <input type="radio" id="<?php echo esc_attr($field_id . '_' . $rating); ?>" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr((string) $rating); ?>" <?php checked((int) $this->submitted_value($field_name), $rating); ?> />
+                                    <label class="rrp-star-label" for="<?php echo esc_attr($field_id . '_' . $rating); ?>" aria-label="<?php echo esc_attr(sprintf(__('%d star', 'reevuu-reviews'), $rating)); ?>">&#9733;</label>
                                 <?php endfor; ?>
                             </div>
                             <?php $this->render_error($field_name); ?>
                         </fieldset>
                     <?php else : ?>
-                        <label class="<?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>">
+                        <label class="rrp-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($field_id); ?>">
                             <span><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></span>
                             <?php if ('textarea' === $question['type']) : ?>
-                                <textarea name="<?php echo esc_attr($field_name); ?>" rows="4" placeholder="<?php echo esc_attr($question['placeholder']); ?>"><?php echo esc_textarea($this->submitted_value($field_name)); ?></textarea>
+                                <textarea id="<?php echo esc_attr($field_id); ?>" name="<?php echo esc_attr($field_name); ?>" rows="4" placeholder="<?php echo esc_attr($question['placeholder']); ?>"><?php echo esc_textarea($this->submitted_value($field_name)); ?></textarea>
                             <?php else : ?>
-                                <input type="text" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr($this->submitted_value($field_name)); ?>" placeholder="<?php echo esc_attr($question['placeholder']); ?>" />
+                                <input id="<?php echo esc_attr($field_id); ?>" type="text" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr($this->submitted_value($field_name)); ?>" placeholder="<?php echo esc_attr($question['placeholder']); ?>" />
                             <?php endif; ?>
                             <?php if (! empty($question['help_text'])) : ?>
                                 <small class="rrp-help"><?php echo esc_html($question['help_text']); ?></small>
@@ -387,17 +395,17 @@ class RRP_Public
                 <?php endforeach; ?>
 
                 <?php if ((int) $settings['max_images'] > 0) : ?>
-                    <label class="<?php echo isset($errors['rrp_images']) ? 'has-error' : ''; ?>">
+                    <label class="rrp-field <?php echo isset($errors['rrp_images']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($images_id); ?>">
                         <span><?php printf(esc_html__('Add up to %d images', 'reevuu-reviews'), (int) $settings['max_images']); ?></span>
-                        <input type="file" name="rrp_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple />
+                        <input id="<?php echo esc_attr($images_id); ?>" type="file" name="rrp_images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple />
                         <small class="rrp-help"><?php printf(esc_html__('Max file size: %dMB per image.', 'reevuu-reviews'), (int) $settings['max_image_size_mb']); ?></small>
                         <?php $this->render_error('rrp_images'); ?>
                     </label>
                 <?php endif; ?>
 
                 <?php if ($settings['consent_enabled']) : ?>
-                    <label class="rrp-consent <?php echo isset($errors['has_consent']) ? 'has-error' : ''; ?>">
-                        <input type="checkbox" name="has_consent" value="1" <?php checked((int) $this->submitted_value('has_consent'), 1); ?> />
+                    <label class="rrp-consent <?php echo isset($errors['has_consent']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($consent_id); ?>">
+                        <input id="<?php echo esc_attr($consent_id); ?>" type="checkbox" name="has_consent" value="1" <?php checked((int) $this->submitted_value('has_consent'), 1); ?> />
                         <span>
                             <?php echo esc_html($settings['consent_label']); ?>
                             <?php if (! empty($settings['consent_url'])) : ?>

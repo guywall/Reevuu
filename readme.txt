@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,9 @@ Features include:
 `[reevuu_reviews_gallery]`
 
 == Changelog ==
+
+= 1.0.2 =
+- Improved frontend form layout resilience and field/label accessibility
 
 = 1.0.1 =
 - Updated branding, repository/plugin structure, and documentation
