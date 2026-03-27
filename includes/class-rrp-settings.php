@@ -28,9 +28,7 @@ class RRP_Settings
             'consent_url'             => '',
             'max_images'              => 5,
             'max_image_size_mb'       => 5,
-            'review_title_label'      => __('Review title', 'reevuu-reviews'),
             'review_content_label'    => __('Tell us about your experience', 'reevuu-reviews'),
-            'review_title_required'   => 0,
             'review_content_required' => 1,
             'success_message'         => __('Thanks for sharing your review.', 'reevuu-reviews'),
             'pending_message'         => __('Thanks for sharing your review. It is awaiting moderation.', 'reevuu-reviews'),
@@ -41,6 +39,12 @@ class RRP_Settings
             'google_feed_enabled'     => 1,
             'google_feed_slug'        => 'rrp-google-reviews.xml',
             'brand_name'              => get_bloginfo('name'),
+            'style_font_family'       => 'inherit',
+            'style_form_background'   => '#fffef9',
+            'style_card_background'   => '#ffffff',
+            'style_accent_color'      => '#1f6f5f',
+            'style_star_color'        => '#f59e0b',
+            'style_text_color'        => '#0f172a',
         );
     }
 
@@ -86,9 +90,7 @@ class RRP_Settings
                 'consent_url'             => esc_url_raw($values['consent_url'] ?? ''),
                 'max_images'              => max(0, min(10, absint($values['max_images'] ?? $defaults['max_images']))),
                 'max_image_size_mb'       => max(1, min(15, absint($values['max_image_size_mb'] ?? $defaults['max_image_size_mb']))),
-                'review_title_label'      => sanitize_text_field($values['review_title_label'] ?? $defaults['review_title_label']),
                 'review_content_label'    => sanitize_text_field($values['review_content_label'] ?? $defaults['review_content_label']),
-                'review_title_required'   => empty($values['review_title_required']) ? 0 : 1,
                 'review_content_required' => empty($values['review_content_required']) ? 0 : 1,
                 'success_message'         => sanitize_text_field($values['success_message'] ?? $defaults['success_message']),
                 'pending_message'         => sanitize_text_field($values['pending_message'] ?? $defaults['pending_message']),
@@ -99,6 +101,12 @@ class RRP_Settings
                 'google_feed_enabled'     => empty($values['google_feed_enabled']) ? 0 : 1,
                 'google_feed_slug'        => $this->sanitize_feed_slug($values['google_feed_slug'] ?? $defaults['google_feed_slug']),
                 'brand_name'              => sanitize_text_field($values['brand_name'] ?? $defaults['brand_name']),
+                'style_font_family'       => sanitize_text_field($values['style_font_family'] ?? $defaults['style_font_family']),
+                'style_form_background'   => sanitize_hex_color($values['style_form_background'] ?? $defaults['style_form_background']) ?: $defaults['style_form_background'],
+                'style_card_background'   => sanitize_hex_color($values['style_card_background'] ?? $defaults['style_card_background']) ?: $defaults['style_card_background'],
+                'style_accent_color'      => sanitize_hex_color($values['style_accent_color'] ?? $defaults['style_accent_color']) ?: $defaults['style_accent_color'],
+                'style_star_color'        => sanitize_hex_color($values['style_star_color'] ?? $defaults['style_star_color']) ?: $defaults['style_star_color'],
+                'style_text_color'        => sanitize_hex_color($values['style_text_color'] ?? $defaults['style_text_color']) ?: $defaults['style_text_color'],
             ),
             $defaults
         );

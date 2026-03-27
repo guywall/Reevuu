@@ -271,10 +271,23 @@ class RRP_Admin
                             <tr>
                                 <th scope="row"><?php esc_html_e('Review fields', 'reevuu-reviews'); ?></th>
                                 <td class="rrp-stack">
-                                    <input type="text" class="regular-text" name="settings[review_title_label]" value="<?php echo esc_attr($settings['review_title_label']); ?>" placeholder="<?php esc_attr_e('Title field label', 'reevuu-reviews'); ?>" />
-                                    <label><input type="checkbox" name="settings[review_title_required]" value="1" <?php checked($settings['review_title_required'], 1); ?> /> <?php esc_html_e('Title is required', 'reevuu-reviews'); ?></label>
                                     <input type="text" class="regular-text" name="settings[review_content_label]" value="<?php echo esc_attr($settings['review_content_label']); ?>" placeholder="<?php esc_attr_e('Content field label', 'reevuu-reviews'); ?>" />
                                     <label><input type="checkbox" name="settings[review_content_required]" value="1" <?php checked($settings['review_content_required'], 1); ?> /> <?php esc_html_e('Content is required', 'reevuu-reviews'); ?></label>
+                                    <p class="description"><?php esc_html_e('The review title field has been removed from the public form. This label controls the main experience textarea shown after the rating questions.', 'reevuu-reviews'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php esc_html_e('Appearance', 'reevuu-reviews'); ?></th>
+                                <td class="rrp-stack">
+                                    <input type="text" class="regular-text" name="settings[style_font_family]" value="<?php echo esc_attr($settings['style_font_family']); ?>" placeholder="<?php esc_attr_e('inherit or e.g. Montserrat, sans-serif', 'reevuu-reviews'); ?>" />
+                                    <p class="description"><?php esc_html_e('Use "inherit" to piggyback off your theme or Elementor typography. If Elementor already loads a Google Font, entering the same font family here will use it without ReevuuWP loading another copy.', 'reevuu-reviews'); ?></p>
+                                    <div class="rrp-inline-inputs">
+                                        <label><?php esc_html_e('Form background', 'reevuu-reviews'); ?> <input type="color" name="settings[style_form_background]" value="<?php echo esc_attr($settings['style_form_background']); ?>" /></label>
+                                        <label><?php esc_html_e('Card background', 'reevuu-reviews'); ?> <input type="color" name="settings[style_card_background]" value="<?php echo esc_attr($settings['style_card_background']); ?>" /></label>
+                                        <label><?php esc_html_e('Accent/button', 'reevuu-reviews'); ?> <input type="color" name="settings[style_accent_color]" value="<?php echo esc_attr($settings['style_accent_color']); ?>" /></label>
+                                        <label><?php esc_html_e('Star colour', 'reevuu-reviews'); ?> <input type="color" name="settings[style_star_color]" value="<?php echo esc_attr($settings['style_star_color']); ?>" /></label>
+                                        <label><?php esc_html_e('Text colour', 'reevuu-reviews'); ?> <input type="color" name="settings[style_text_color]" value="<?php echo esc_attr($settings['style_text_color']); ?>" /></label>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>

@@ -43,6 +43,7 @@ class RRP_Public
 
         wp_enqueue_style('rrp-public', RRP_PLUGIN_URL . 'assets/css/public.css', array(), RRP_VERSION);
         wp_enqueue_script('rrp-public', RRP_PLUGIN_URL . 'assets/js/public.js', array(), RRP_VERSION, true);
+        wp_add_inline_style('rrp-public', $this->get_dynamic_css());
 
         wp_localize_script(
             'rrp-public',
@@ -149,7 +150,6 @@ class RRP_Public
 
         $reviewer_name = sanitize_text_field(wp_unslash($_POST['reviewer_name'] ?? ''));
         $reviewer_email = sanitize_email(wp_unslash($_POST['reviewer_email'] ?? ''));
-        $review_title = sanitize_text_field(wp_unslash($_POST['review_title'] ?? ''));
         $review_content = sanitize_textarea_field(wp_unslash($_POST['review_content'] ?? ''));
         $has_consent = empty($_POST['has_consent']) ? 0 : 1;
         $target_id = absint($_POST['target_id'] ?? $this->repository->get_default_target_id());
@@ -160,10 +160,6 @@ class RRP_Public
 
         if (! is_email($reviewer_email)) {
             $errors['reviewer_email'] = __('Please enter a valid email address.', 'reevuu-reviews');
-        }
-
-        if ($this->settings->get('review_title_required') && '' === $review_title) {
-            $errors['review_title'] = __('Please enter a review title.', 'reevuu-reviews');
         }
 
         if ($this->settings->get('review_content_required') && '' === $review_content) {
@@ -246,7 +242,7 @@ class RRP_Public
                     'target_id'      => $target_id ?: $this->repository->get_default_target_id(),
                     'reviewer_name'  => $reviewer_name,
                     'reviewer_email' => $reviewer_email,
-                    'review_title'   => $review_title,
+                    'review_title'   => '',
                     'review_content' => $review_content,
                     'overall_rating' => $overall_rating,
                     'status'         => 'auto_publish' === $this->settings->get('moderation_mode') ? 'approved' : 'pending',
@@ -320,7 +316,6 @@ class RRP_Public
         $form_uid = wp_unique_id('rrp-form-');
         $reviewer_name_id = $form_uid . '-reviewer-name';
         $reviewer_email_id = $form_uid . '-reviewer-email';
-        $review_title_id = $form_uid . '-review-title';
         $review_content_id = $form_uid . '-review-content';
         $images_id = $form_uid . '-images';
         $consent_id = $form_uid . '-consent';
@@ -349,11 +344,26 @@ class RRP_Public
                     </label>
                 </div>
 
-                <label class="rrp-field <?php echo isset($errors['review_title']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($review_title_id); ?>">
-                    <span><?php echo esc_html($settings['review_title_label']); ?></span>
-                    <input id="<?php echo esc_attr($review_title_id); ?>" type="text" name="review_title" value="<?php echo esc_attr($this->submitted_value('review_title')); ?>" <?php echo $settings['review_title_required'] ? 'required' : ''; ?> />
-                    <?php $this->render_error('review_title'); ?>
-                </label>
+                <?php foreach ($questions as $question) : ?>
+                    <?php if ('rating' !== $question['type']) : ?>
+                        <?php continue; ?>
+                    <?php endif; ?>
+                    <?php $field_name = 'question_' . $question['question_key']; ?>
+                    <?php $field_id = $form_uid . '-' . sanitize_html_class($field_name); ?>
+                    <fieldset class="rrp-rating-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>">
+                        <legend><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></legend>
+                        <?php if (! empty($question['help_text'])) : ?>
+                            <p class="rrp-help"><?php echo esc_html($question['help_text']); ?></p>
+                        <?php endif; ?>
+                        <div class="rrp-stars-input" data-target="<?php echo esc_attr($field_name); ?>">
+                            <?php for ($rating = 5; $rating >= 1; $rating--) : ?>
+                                <input type="radio" id="<?php echo esc_attr($field_id . '_' . $rating); ?>" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr((string) $rating); ?>" <?php checked((int) $this->submitted_value($field_name), $rating); ?> />
+                                <label class="rrp-star-label" for="<?php echo esc_attr($field_id . '_' . $rating); ?>" aria-label="<?php echo esc_attr(sprintf(__('%d star', 'reevuu-reviews'), $rating)); ?>">&#9733;</label>
+                            <?php endfor; ?>
+                        </div>
+                        <?php $this->render_error($field_name); ?>
+                    </fieldset>
+                <?php endforeach; ?>
 
                 <label class="rrp-field <?php echo isset($errors['review_content']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($review_content_id); ?>">
                     <span><?php echo esc_html($settings['review_content_label']); ?></span>
@@ -362,36 +372,23 @@ class RRP_Public
                 </label>
 
                 <?php foreach ($questions as $question) : ?>
+                    <?php if ('rating' === $question['type']) : ?>
+                        <?php continue; ?>
+                    <?php endif; ?>
                     <?php $field_name = 'question_' . $question['question_key']; ?>
                     <?php $field_id = $form_uid . '-' . sanitize_html_class($field_name); ?>
-                    <?php if ('rating' === $question['type']) : ?>
-                        <fieldset class="rrp-rating-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>">
-                            <legend><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></legend>
-                            <?php if (! empty($question['help_text'])) : ?>
-                                <p class="rrp-help"><?php echo esc_html($question['help_text']); ?></p>
-                            <?php endif; ?>
-                            <div class="rrp-stars-input" data-target="<?php echo esc_attr($field_name); ?>">
-                                <?php for ($rating = 5; $rating >= 1; $rating--) : ?>
-                                    <input type="radio" id="<?php echo esc_attr($field_id . '_' . $rating); ?>" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr((string) $rating); ?>" <?php checked((int) $this->submitted_value($field_name), $rating); ?> />
-                                    <label class="rrp-star-label" for="<?php echo esc_attr($field_id . '_' . $rating); ?>" aria-label="<?php echo esc_attr(sprintf(__('%d star', 'reevuu-reviews'), $rating)); ?>">&#9733;</label>
-                                <?php endfor; ?>
-                            </div>
-                            <?php $this->render_error($field_name); ?>
-                        </fieldset>
-                    <?php else : ?>
-                        <label class="rrp-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($field_id); ?>">
-                            <span><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></span>
-                            <?php if ('textarea' === $question['type']) : ?>
-                                <textarea id="<?php echo esc_attr($field_id); ?>" name="<?php echo esc_attr($field_name); ?>" rows="4" placeholder="<?php echo esc_attr($question['placeholder']); ?>"><?php echo esc_textarea($this->submitted_value($field_name)); ?></textarea>
-                            <?php else : ?>
-                                <input id="<?php echo esc_attr($field_id); ?>" type="text" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr($this->submitted_value($field_name)); ?>" placeholder="<?php echo esc_attr($question['placeholder']); ?>" />
-                            <?php endif; ?>
-                            <?php if (! empty($question['help_text'])) : ?>
-                                <small class="rrp-help"><?php echo esc_html($question['help_text']); ?></small>
-                            <?php endif; ?>
-                            <?php $this->render_error($field_name); ?>
-                        </label>
-                    <?php endif; ?>
+                    <label class="rrp-field <?php echo isset($errors[$field_name]) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($field_id); ?>">
+                        <span><?php echo esc_html($question['label']); ?><?php echo ! empty($question['is_required']) ? ' *' : ''; ?></span>
+                        <?php if ('textarea' === $question['type']) : ?>
+                            <textarea id="<?php echo esc_attr($field_id); ?>" name="<?php echo esc_attr($field_name); ?>" rows="4" placeholder="<?php echo esc_attr($question['placeholder']); ?>"><?php echo esc_textarea($this->submitted_value($field_name)); ?></textarea>
+                        <?php else : ?>
+                            <input id="<?php echo esc_attr($field_id); ?>" type="text" name="<?php echo esc_attr($field_name); ?>" value="<?php echo esc_attr($this->submitted_value($field_name)); ?>" placeholder="<?php echo esc_attr($question['placeholder']); ?>" />
+                        <?php endif; ?>
+                        <?php if (! empty($question['help_text'])) : ?>
+                            <small class="rrp-help"><?php echo esc_html($question['help_text']); ?></small>
+                        <?php endif; ?>
+                        <?php $this->render_error($field_name); ?>
+                    </label>
                 <?php endforeach; ?>
 
                 <?php if ((int) $settings['max_images'] > 0) : ?>
@@ -846,6 +843,26 @@ class RRP_Public
         $output .= '</span>';
 
         return $output;
+    }
+
+    private function get_dynamic_css()
+    {
+        $settings = $this->settings->get_all();
+        $font_family = trim((string) $settings['style_font_family']);
+        if ('' === $font_family) {
+            $font_family = 'inherit';
+        }
+
+        $css = ':root{'
+            . '--rrp-form-bg:' . esc_html($settings['style_form_background']) . ';'
+            . '--rrp-card-bg:' . esc_html($settings['style_card_background']) . ';'
+            . '--rrp-accent:' . esc_html($settings['style_accent_color']) . ';'
+            . '--rrp-star:' . esc_html($settings['style_star_color']) . ';'
+            . '--rrp-text:' . esc_html($settings['style_text_color']) . ';'
+            . '--rrp-font:' . esc_html($font_family) . ';'
+            . '}';
+
+        return $css;
     }
 
     private function render_schema_script($reviews, $summary)
