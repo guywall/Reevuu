@@ -33,6 +33,7 @@ class RRP_Public
         add_shortcode('reevuu_reviews_slider', array($this, 'render_slider_shortcode'));
         add_shortcode('reevuu_reviews_chips', array($this, 'render_chips_shortcode'));
         add_shortcode('reevuu_reviews_gallery', array($this, 'render_gallery_shortcode'));
+        add_shortcode('reevuu_reviews_badge', array($this, 'render_badge_shortcode'));
     }
 
     public function enqueue_assets()
@@ -333,13 +334,13 @@ class RRP_Public
 
                 <div class="rrp-form-grid">
                     <label class="rrp-field <?php echo isset($errors['reviewer_name']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($reviewer_name_id); ?>">
-                        <span><?php esc_html_e('Your name', 'reevuu-reviews'); ?></span>
+                        <span><?php esc_html_e('Your name *', 'reevuu-reviews'); ?></span>
                         <input id="<?php echo esc_attr($reviewer_name_id); ?>" type="text" name="reviewer_name" value="<?php echo esc_attr($this->submitted_value('reviewer_name')); ?>" required />
                         <?php $this->render_error('reviewer_name'); ?>
                     </label>
 
                     <label class="rrp-field <?php echo isset($errors['reviewer_email']) ? 'has-error' : ''; ?>" for="<?php echo esc_attr($reviewer_email_id); ?>">
-                        <span><?php esc_html_e('Your email', 'reevuu-reviews'); ?></span>
+                        <span><?php esc_html_e('Your email *', 'reevuu-reviews'); ?></span>
                         <input id="<?php echo esc_attr($reviewer_email_id); ?>" type="email" name="reviewer_email" value="<?php echo esc_attr($this->submitted_value('reviewer_email')); ?>" required />
                         <?php $this->render_error('reviewer_email'); ?>
                     </label>
@@ -727,6 +728,42 @@ class RRP_Public
                 <?php endforeach; ?>
             </div>
         </section>
+        <?php
+
+        return ob_get_clean();
+    }
+
+    public function render_badge_shortcode($atts = array())
+    {
+        $atts = shortcode_atts(
+            array(
+                'target_id'   => $this->repository->get_default_target_id(),
+                'show_count'  => '1',
+                'show_label'  => '1',
+                'label'       => __('Rated', 'reevuu-reviews'),
+            ),
+            $atts,
+            'reevuu_reviews_badge'
+        );
+
+        $summary = $this->repository->get_summary((int) $atts['target_id']);
+
+        if (empty($summary['count'])) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <span class="rrp-badge" aria-label="<?php echo esc_attr(sprintf(__('Average rating %1$s from %2$s reviews', 'reevuu-reviews'), number_format_i18n((float) $summary['average_rating'], 1), number_format_i18n((int) $summary['count']))); ?>">
+            <?php if ('1' === (string) $atts['show_label']) : ?>
+                <span class="rrp-badge-label"><?php echo esc_html($atts['label']); ?></span>
+            <?php endif; ?>
+            <span class="rrp-badge-score"><?php echo esc_html(number_format_i18n((float) $summary['average_rating'], 1)); ?></span>
+            <span class="rrp-badge-stars"><?php echo $this->render_stars((float) $summary['average_rating']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+            <?php if ('1' === (string) $atts['show_count']) : ?>
+                <span class="rrp-badge-count"><?php echo esc_html(number_format_i18n((int) $summary['count'])); ?></span>
+            <?php endif; ?>
+        </span>
         <?php
 
         return ob_get_clean();

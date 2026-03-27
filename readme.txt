@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ Features include:
 - Review summaries and distribution bars
 - Searchable/sortable review list output
 - Review slider, chips, and image gallery displays
+- Compact rating badge shortcode
 - JSON-LD structured data
 - Google review XML feed
 
@@ -48,7 +49,12 @@ Features include:
 
 `[reevuu_reviews_gallery]`
 
+`[reevuu_reviews_badge]`
+
 == Changelog ==
+
+= 1.1.1 =
+- Added submission IP visibility in moderation and a compact reviews badge shortcode
 
 = 1.1.0 =
 - Added moderation badges, admin replies, configurable review notification emails by rating, secondary gradient color control, and list/filter UI improvements

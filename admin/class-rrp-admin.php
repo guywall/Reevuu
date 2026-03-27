@@ -454,6 +454,7 @@ class RRP_Admin
                             </div>
                             <div class="rrp-meta">
                                 <span><?php echo esc_html($review['reviewer_email']); ?></span>
+                                <span><?php echo esc_html__('IP:', 'reevuu-reviews'); ?> <?php echo esc_html($review['submission_ip'] ?: __('Unknown', 'reevuu-reviews')); ?></span>
                                 <span><?php echo esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $review['created_at'])); ?></span>
                             </div>
                         </header>

@@ -8,6 +8,7 @@ It provides:
 - Star ratings and configurable extra review questions
 - Admin moderation and verified-review toggles
 - Frontend review summaries, tables, sliders, chips, and image galleries
+- Compact header/footer rating badge shortcode
 - JSON-LD review schema
 - A Google review XML feed for approved reviews
 
@@ -126,6 +127,18 @@ Optional attributes:
 
 ```text
 [reevuu_reviews_gallery title="Customer Images" limit="12"]
+```
+
+#### Compact rating badge
+
+```text
+[reevuu_reviews_badge]
+```
+
+Optional attributes:
+
+```text
+[reevuu_reviews_badge show_count="1" show_label="1" label="Rated"]
 ```
 
 ## Recommended Page Setup
