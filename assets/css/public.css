@@ -237,25 +237,58 @@
 .rrp-review-table-public {
     width: 100%;
     min-width: 760px;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 14px;
 }
 
 .rrp-review-table-public th,
 .rrp-review-table-public td {
-    padding: 16px 12px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 18px 16px;
     vertical-align: top;
+    background: var(--rrp-card-bg, #ffffff);
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.rrp-review-table-public th {
+    background: transparent;
+    border: none;
+    padding: 0 16px 6px;
+    color: #475569;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.rrp-review-table-public td:first-child {
+    border-left: 1px solid #e2e8f0;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+.rrp-review-table-public td:last-child {
+    border-right: 1px solid #e2e8f0;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
 }
 
 .rrp-reviewer-cell {
     display: flex;
     gap: 12px;
+    align-items: flex-start;
+}
+
+.rrp-reviewer-cell > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
 }
 
 .rrp-reviewer-location {
-    margin-top: 4px;
     font-size: 13px;
     color: #64748b;
+    line-height: 1.35;
 }
 
 .rrp-avatar {
@@ -272,23 +305,27 @@
 
 .rrp-verified {
     display: inline-flex;
-    margin-top: 6px;
-    padding: 4px 10px;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: 0;
+    padding: 6px 12px;
     border-radius: 999px;
     background: #d1fae5;
     font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .rrp-answer-line {
-    margin-top: 6px;
+    margin-top: 10px;
 }
 
 .rrp-review-response {
-    margin-top: 12px;
-    padding: 12px 14px;
+    margin-top: 16px;
+    padding: 14px 16px;
     border-left: 4px solid var(--rrp-accent, #1f6f5f);
-    border-radius: 10px;
-    background: rgba(15, 23, 42, 0.04);
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.045);
 }
 
 .rrp-review-response p {
@@ -388,6 +425,7 @@
     .rrp-review-table-public {
         min-width: 0;
         border-collapse: separate;
+        border-spacing: 0;
     }
 
     .rrp-review-table-public thead {
@@ -402,27 +440,62 @@
     }
 
     .rrp-review-table-public tr {
-        margin-bottom: 16px;
-        padding: 16px;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
+        margin-bottom: 20px;
+        padding: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 22px;
         background: var(--rrp-card-bg, #ffffff);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
     }
 
     .rrp-review-table-public td {
-        padding: 10px 0;
-        border-bottom: none;
+        padding: 14px 0;
+        border: none;
+        background: transparent;
+    }
+
+    .rrp-review-table-public td + td {
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
     }
 
     .rrp-review-table-public td::before {
         content: attr(data-label);
         display: block;
-        margin-bottom: 6px;
-        font-size: 12px;
+        margin-bottom: 10px;
+        font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
         color: #64748b;
+    }
+
+    .rrp-reviewer-cell {
+        gap: 14px;
+    }
+
+    .rrp-avatar {
+        width: 50px;
+        height: 50px;
+        flex: 0 0 50px;
+    }
+
+    .rrp-reviewer-cell > div {
+        gap: 8px;
+    }
+
+    .rrp-verified {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .rrp-answer-line {
+        margin-top: 12px;
+    }
+
+    .rrp-review-response {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 16px;
     }
 
     .rrp-summary-card {

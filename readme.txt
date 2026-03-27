@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Features include:
 `[reevuu_reviews_badge]`
 
 == Changelog ==
+
+= 1.1.3 =
+- Refined review list styling for a more modern layout, improved mobile spacing, and fixed verified badge alignment
 
 = 1.1.2 =
 - Added a Town/City reviewer field and switched the mobile review list from horizontal scroll to stacked cards
