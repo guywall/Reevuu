@@ -30,7 +30,7 @@
 .rrp-form-grid {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px 24px;
 }
 
@@ -252,6 +252,12 @@
     gap: 12px;
 }
 
+.rrp-reviewer-location {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #64748b;
+}
+
 .rrp-avatar {
     width: 44px;
     height: 44px;
@@ -363,6 +369,60 @@
     .rrp-review-form,
     .rrp-form-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rrp-table-scroll {
+        overflow: visible;
+    }
+
+    .rrp-review-table-public,
+    .rrp-review-table-public thead,
+    .rrp-review-table-public tbody,
+    .rrp-review-table-public tr,
+    .rrp-review-table-public th,
+    .rrp-review-table-public td {
+        display: block;
+        width: 100%;
+    }
+
+    .rrp-review-table-public {
+        min-width: 0;
+        border-collapse: separate;
+    }
+
+    .rrp-review-table-public thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
+
+    .rrp-review-table-public tr {
+        margin-bottom: 16px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: var(--rrp-card-bg, #ffffff);
+    }
+
+    .rrp-review-table-public td {
+        padding: 10px 0;
+        border-bottom: none;
+    }
+
+    .rrp-review-table-public td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #64748b;
     }
 
     .rrp-summary-card {

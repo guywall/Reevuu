@@ -151,6 +151,7 @@ class RRP_Public
 
         $reviewer_name = sanitize_text_field(wp_unslash($_POST['reviewer_name'] ?? ''));
         $reviewer_email = sanitize_email(wp_unslash($_POST['reviewer_email'] ?? ''));
+        $reviewer_town_city = sanitize_text_field(wp_unslash($_POST['reviewer_town_city'] ?? ''));
         $review_content = sanitize_textarea_field(wp_unslash($_POST['review_content'] ?? ''));
         $has_consent = empty($_POST['has_consent']) ? 0 : 1;
         $target_id = absint($_POST['target_id'] ?? $this->repository->get_default_target_id());
@@ -243,6 +244,7 @@ class RRP_Public
                     'target_id'      => $target_id ?: $this->repository->get_default_target_id(),
                     'reviewer_name'  => $reviewer_name,
                     'reviewer_email' => $reviewer_email,
+                    'reviewer_town_city' => $reviewer_town_city,
                     'review_title'   => '',
                     'review_content' => $review_content,
                     'overall_rating' => $overall_rating,
@@ -318,6 +320,7 @@ class RRP_Public
         $form_uid = wp_unique_id('rrp-form-');
         $reviewer_name_id = $form_uid . '-reviewer-name';
         $reviewer_email_id = $form_uid . '-reviewer-email';
+        $reviewer_town_city_id = $form_uid . '-reviewer-town-city';
         $review_content_id = $form_uid . '-review-content';
         $images_id = $form_uid . '-images';
         $consent_id = $form_uid . '-consent';
@@ -343,6 +346,11 @@ class RRP_Public
                         <span><?php esc_html_e('Your email *', 'reevuu-reviews'); ?></span>
                         <input id="<?php echo esc_attr($reviewer_email_id); ?>" type="email" name="reviewer_email" value="<?php echo esc_attr($this->submitted_value('reviewer_email')); ?>" required />
                         <?php $this->render_error('reviewer_email'); ?>
+                    </label>
+
+                    <label class="rrp-field" for="<?php echo esc_attr($reviewer_town_city_id); ?>">
+                        <span><?php esc_html_e('Town/City', 'reevuu-reviews'); ?></span>
+                        <input id="<?php echo esc_attr($reviewer_town_city_id); ?>" type="text" name="reviewer_town_city" value="<?php echo esc_attr($this->submitted_value('reviewer_town_city')); ?>" />
                     </label>
                 </div>
 
@@ -539,20 +547,23 @@ class RRP_Public
                         <?php endif; ?>
                         <?php foreach ($reviews as $review) : ?>
                             <tr>
-                                <td>
+                                <td data-label="<?php esc_attr_e('Reviewer', 'reevuu-reviews'); ?>">
                                     <div class="rrp-reviewer-cell">
                                         <span class="rrp-avatar"><?php echo esc_html($review['initials']); ?></span>
                                         <div>
                                             <strong><?php echo esc_html($review['reviewer_name']); ?></strong>
+                                            <?php if (! empty($review['reviewer_town_city'])) : ?>
+                                                <div class="rrp-reviewer-location"><?php echo esc_html($review['reviewer_town_city']); ?></div>
+                                            <?php endif; ?>
                                             <?php if (! empty($review['is_verified'])) : ?>
                                                 <span class="rrp-verified"><?php esc_html_e('Verified review', 'reevuu-reviews'); ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </td>
-                                <td><?php echo $this->render_stars((float) $review['overall_rating']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-                                <td><?php echo esc_html(mysql2date(get_option('date_format'), $review['created_at'])); ?></td>
-                                <td>
+                                <td data-label="<?php esc_attr_e('Rating', 'reevuu-reviews'); ?>"><?php echo $this->render_stars((float) $review['overall_rating']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+                                <td data-label="<?php esc_attr_e('Date', 'reevuu-reviews'); ?>"><?php echo esc_html(mysql2date(get_option('date_format'), $review['created_at'])); ?></td>
+                                <td data-label="<?php esc_attr_e('Review', 'reevuu-reviews'); ?>">
                                     <?php if (! empty($review['review_title'])) : ?>
                                         <strong><?php echo esc_html($review['review_title']); ?></strong>
                                     <?php endif; ?>
@@ -636,6 +647,9 @@ class RRP_Public
                             <span class="rrp-avatar"><?php echo esc_html($review['initials']); ?></span>
                             <div>
                                 <strong><?php echo esc_html($review['reviewer_name']); ?></strong>
+                                <?php if (! empty($review['reviewer_town_city'])) : ?>
+                                    <div class="rrp-reviewer-location"><?php echo esc_html($review['reviewer_town_city']); ?></div>
+                                <?php endif; ?>
                                 <?php if (! empty($review['is_verified'])) : ?>
                                     <span class="rrp-verified"><?php esc_html_e('Verified review', 'reevuu-reviews'); ?></span>
                                 <?php endif; ?>
@@ -940,6 +954,7 @@ class RRP_Public
             '',
             sprintf(__('Reviewer: %s', 'reevuu-reviews'), $review['reviewer_name'] ?? ''),
             sprintf(__('Email: %s', 'reevuu-reviews'), $review['reviewer_email'] ?? ''),
+            sprintf(__('Town/City: %s', 'reevuu-reviews'), $review['reviewer_town_city'] ?? ''),
             sprintf(__('Overall rating: %s/5', 'reevuu-reviews'), number_format_i18n((float) ($review['overall_rating'] ?? 0), 1)),
             sprintf(__('Status: %s', 'reevuu-reviews'), ucfirst((string) ($review['status'] ?? 'pending'))),
             '',

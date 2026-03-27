@@ -115,6 +115,7 @@ class RRP_Repository
                 'target_id'       => (int) $review['target_id'],
                 'reviewer_name'   => sanitize_text_field($review['reviewer_name']),
                 'reviewer_email'  => sanitize_email($review['reviewer_email']),
+                'reviewer_town_city' => sanitize_text_field($review['reviewer_town_city'] ?? ''),
                 'review_title'    => sanitize_text_field($review['review_title']),
                 'review_content'  => wp_kses_post($review['review_content']),
                 'overall_rating'  => (float) $review['overall_rating'],
@@ -129,7 +130,7 @@ class RRP_Repository
                 'created_at'      => $now,
                 'updated_at'      => $now,
             ),
-            array('%d', '%s', '%s', '%s', '%s', '%f', '%s', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+            array('%d', '%s', '%s', '%s', '%s', '%s', '%f', '%s', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
         );
 
         if (! $inserted) {

@@ -56,6 +56,7 @@ class RRP_Installer
                 target_id BIGINT(20) UNSIGNED NOT NULL,
                 reviewer_name VARCHAR(191) NOT NULL,
                 reviewer_email VARCHAR(191) NOT NULL,
+                reviewer_town_city VARCHAR(191) NULL,
                 review_title VARCHAR(191) NULL,
                 review_content LONGTEXT NULL,
                 overall_rating DECIMAL(3,2) NOT NULL DEFAULT 0,
