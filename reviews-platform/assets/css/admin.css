@@ -1,0 +1,149 @@
+.rrp-admin-wrap .rrp-admin-grid {
+    display: grid;
+    gap: 24px;
+}
+
+.rrp-admin-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 10px;
+    padding: 24px;
+}
+
+.rrp-admin-card-header,
+.rrp-question-row-main,
+.rrp-question-row-secondary,
+.rrp-question-row-flags,
+.rrp-review-admin-header,
+.rrp-review-action-form,
+.rrp-inline-inputs,
+.rrp-stack {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rrp-question-list,
+.rrp-review-table {
+    display: grid;
+    gap: 16px;
+}
+
+.rrp-question-row {
+    border: 1px solid #dcdcde;
+    border-radius: 10px;
+    padding: 16px;
+    background: #f6f7f7;
+}
+
+.rrp-question-row label,
+.rrp-inline-inputs label,
+.rrp-review-action-form label {
+    display: grid;
+    gap: 6px;
+}
+
+.rrp-question-row input[type="text"],
+.rrp-question-row input[type="number"],
+.rrp-question-row select {
+    min-width: 200px;
+}
+
+.rrp-status-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+}
+
+.rrp-status-tab {
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.rrp-status-tab.is-active {
+    background: #111827;
+    color: #fff;
+}
+
+.rrp-search-form {
+    margin: 16px 0 24px;
+    display: flex;
+    gap: 8px;
+}
+
+.rrp-search-form input[type="search"] {
+    min-width: 320px;
+}
+
+.rrp-review-admin-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.rrp-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e5e7eb;
+}
+
+.rrp-pill.verified,
+.rrp-verified {
+    color: #047857;
+    background: #d1fae5;
+}
+
+.rrp-pill.status-approved {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.rrp-pill.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rrp-pill.status-rejected,
+.rrp-pill.status-spam {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.rrp-answer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+}
+
+.rrp-admin-media-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.rrp-admin-media-strip img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+@media (max-width: 782px) {
+    .rrp-search-form {
+        flex-direction: column;
+    }
+
+    .rrp-search-form input[type="search"] {
+        min-width: 100%;
+    }
+}
