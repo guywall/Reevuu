@@ -484,8 +484,18 @@
 
     .rrp-review-table-public td {
         padding: 0;
-        border: none;
-        background: transparent;
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .rrp-review-table-public tbody tr:nth-child(odd) td,
+    .rrp-review-table-public tbody tr:nth-child(even) td,
+    .rrp-review-table-public tbody tr:hover td,
+    .rrp-review-table-public tbody tr:focus-within td {
+        background: transparent !important;
+        border-color: transparent !important;
     }
 
     .rrp-review-table-public td:nth-child(1),
@@ -506,6 +516,8 @@
 
     .rrp-reviewer-cell {
         gap: 12px;
+        padding: 0;
+        background: transparent;
     }
 
     .rrp-avatar {
@@ -531,6 +543,12 @@
         margin-top: 12px;
         padding: 12px 14px;
         border-radius: 14px;
+    }
+
+    .rrp-review-table-public td p:last-child,
+    .rrp-review-table-public td .rrp-answer-line:last-child,
+    .rrp-review-table-public td .rrp-review-response:last-child {
+        margin-bottom: 0;
     }
 
     .rrp-summary-card {

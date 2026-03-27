@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ReevuuWP
  * Description: A standalone customer reviews platform for WordPress with moderation, media uploads, summaries, shortcodes, blocks, and XML feed output.
- * Version: 1.1.4
+ * Version: 1.1.5
  * Author: WebRankers
  * Text Domain: reevuu-reviews
  * Requires at least: 6.2
@@ -13,7 +13,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('RRP_VERSION', '1.1.4');
+define('RRP_VERSION', '1.1.5');
 define('RRP_PLUGIN_FILE', __FILE__);
 define('RRP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('RRP_PLUGIN_URL', plugin_dir_url(__FILE__));

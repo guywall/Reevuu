@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,8 +53,11 @@ Features include:
 
 == Changelog ==
 
+= 1.1.5 =
+ - Removed mobile zebra/hover table styling conflicts and changed full-star review rating text from decimal output to whole-number `/5`
+
 = 1.1.4 =
-- Removed the default form heading and refined review list/mobile styling for a cleaner, less cramped presentation
+ - Removed the default form heading and refined review list/mobile styling for a cleaner, less cramped presentation
 
 = 1.1.3 =
 - Refined review list styling for a more modern layout, improved mobile spacing, and fixed verified badge alignment

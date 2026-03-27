@@ -582,7 +582,7 @@ class RRP_Public
                                         <div class="rrp-answer-line">
                                             <span><?php echo esc_html($answer['question_label']); ?>:</span>
                                             <strong>
-                                                <?php echo 'rating' === $answer['question_type'] ? esc_html(number_format_i18n((float) $answer['rating_value'], 1) . '/5') : esc_html($answer['text_value']); ?>
+                                                <?php echo 'rating' === $answer['question_type'] ? esc_html((string) max(1, min(5, (int) round((float) $answer['rating_value']))) . '/5') : esc_html($answer['text_value']); ?>
                                             </strong>
                                         </div>
                                     <?php endforeach; ?>
@@ -708,7 +708,7 @@ class RRP_Public
             <?php foreach ($reviews as $review) : ?>
                 <article class="rrp-chip">
                     <strong><?php echo esc_html($review['reviewer_name']); ?></strong>
-                    <span><?php echo esc_html(number_format_i18n((float) $review['overall_rating'], 1)); ?>/5</span>
+                    <span><?php echo esc_html((string) max(1, min(5, (int) round((float) $review['overall_rating'])))); ?>/5</span>
                     <small><?php echo esc_html(wp_trim_words($review['review_content'] ?: $review['review_title'], 10)); ?></small>
                 </article>
             <?php endforeach; ?>
@@ -957,7 +957,7 @@ class RRP_Public
             sprintf(__('Reviewer: %s', 'reevuu-reviews'), $review['reviewer_name'] ?? ''),
             sprintf(__('Email: %s', 'reevuu-reviews'), $review['reviewer_email'] ?? ''),
             sprintf(__('Town/City: %s', 'reevuu-reviews'), $review['reviewer_town_city'] ?? ''),
-            sprintf(__('Overall rating: %s/5', 'reevuu-reviews'), number_format_i18n((float) ($review['overall_rating'] ?? 0), 1)),
+            sprintf(__('Overall rating: %s/5', 'reevuu-reviews'), max(1, min(5, (int) round((float) ($review['overall_rating'] ?? 0))))),
             sprintf(__('Status: %s', 'reevuu-reviews'), ucfirst((string) ($review['status'] ?? 'pending'))),
             '',
             __('Review content:', 'reevuu-reviews'),
