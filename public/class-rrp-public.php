@@ -468,6 +468,7 @@ class RRP_Public
                     </div>
                 <?php endfor; ?>
             </div>
+            <p class="rrp-powered-by"><?php esc_html_e('Reviews powered by WebRankers', 'reevuu-reviews'); ?></p>
         </section>
         <?php
 
@@ -483,7 +484,7 @@ class RRP_Public
         $atts = shortcode_atts(
             array(
                 'target_id'   => $this->repository->get_default_target_id(),
-                'limit'       => $this->settings->get('default_list_limit'),
+                'limit'       => 10,
                 'show_search' => '1',
                 'show_sort'   => '1',
                 'show_schema' => '1',
@@ -494,8 +495,22 @@ class RRP_Public
 
         $search = sanitize_text_field($_GET['rrp_search'] ?? '');
         $sort = sanitize_key($_GET['rrp_sort'] ?? 'newest');
+        $current_page = max(1, absint($_GET['rrp_page'] ?? 1));
+        $per_page = max(1, (int) $atts['limit']);
         if (! in_array($sort, array('newest', 'oldest', 'highest', 'lowest'), true)) {
             $sort = 'newest';
+        }
+
+        $total_reviews = $this->repository->count_reviews(
+            array(
+                'target_id' => (int) $atts['target_id'],
+                'status'    => 'approved',
+                'search'    => $search,
+            )
+        );
+        $total_pages = max(1, (int) ceil($total_reviews / $per_page));
+        if ($current_page > $total_pages) {
+            $current_page = $total_pages;
         }
 
         $reviews = $this->repository->get_reviews(
@@ -504,10 +519,13 @@ class RRP_Public
                 'status'    => 'approved',
                 'search'    => $search,
                 'sort'      => $sort,
-                'limit'     => (int) $atts['limit'],
+                'limit'     => $per_page,
+                'offset'    => ($current_page - 1) * $per_page,
             )
         );
         $summary = $this->repository->get_summary((int) $atts['target_id']);
+        $display_start = $total_reviews ? (($current_page - 1) * $per_page) + 1 : 0;
+        $display_end = $total_reviews ? min($total_reviews, $display_start + count($reviews) - 1) : 0;
 
         ob_start();
         ?>
@@ -528,7 +546,18 @@ class RRP_Public
             <?php endif; ?>
 
             <div class="rrp-results-count">
-                <?php printf(esc_html(_n('%d review shown', '%d reviews shown', count($reviews), 'reevuu-reviews')), count($reviews)); ?>
+                <?php
+                if ($total_reviews > 0) {
+                    printf(
+                        esc_html__('Showing %1$d-%2$d of %3$d reviews', 'reevuu-reviews'),
+                        (int) $display_start,
+                        (int) $display_end,
+                        (int) $total_reviews
+                    );
+                } else {
+                    esc_html_e('No reviews found', 'reevuu-reviews');
+                }
+                ?>
             </div>
 
             <div class="rrp-table-scroll">
@@ -601,6 +630,8 @@ class RRP_Public
                     </tbody>
                 </table>
             </div>
+
+            <?php echo $this->render_list_pagination($current_page, $total_pages); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </section>
         <?php
 
@@ -972,6 +1003,54 @@ class RRP_Public
     private function format_frontend_review_date($date)
     {
         return mysql2date('F Y', $date);
+    }
+
+    private function render_list_pagination($current_page, $total_pages)
+    {
+        $current_page = max(1, (int) $current_page);
+        $total_pages = max(1, (int) $total_pages);
+
+        if ($total_pages <= 1) {
+            return '';
+        }
+
+        $links = array();
+        $links[] = $this->build_pagination_link(max(1, $current_page - 1), __('Previous', 'reevuu-reviews'), $current_page <= 1, false);
+
+        for ($page = 1; $page <= $total_pages; $page++) {
+            if ($page === 1 || $page === $total_pages || abs($page - $current_page) <= 1) {
+                $links[] = $this->build_pagination_link($page, (string) $page, false, $page === $current_page);
+            } elseif ($page === 2 && $current_page > 3) {
+                $links[] = '<span class="rrp-pagination-ellipsis" aria-hidden="true">&hellip;</span>';
+            } elseif ($page === $total_pages - 1 && $current_page < ($total_pages - 2)) {
+                $links[] = '<span class="rrp-pagination-ellipsis" aria-hidden="true">&hellip;</span>';
+            }
+        }
+
+        $links[] = $this->build_pagination_link(min($total_pages, $current_page + 1), __('Next', 'reevuu-reviews'), $current_page >= $total_pages, false);
+
+        return '<nav class="rrp-pagination" aria-label="' . esc_attr__('Reviews pagination', 'reevuu-reviews') . '">' . implode('', $links) . '</nav>';
+    }
+
+    private function build_pagination_link($page, $label, $disabled = false, $is_current = false)
+    {
+        $classes = array('rrp-pagination-link');
+
+        if ($disabled) {
+            $classes[] = 'is-disabled';
+        }
+
+        if ($is_current) {
+            $classes[] = 'is-current';
+        }
+
+        if ($disabled) {
+            return '<span class="' . esc_attr(implode(' ', $classes)) . '">' . esc_html($label) . '</span>';
+        }
+
+        $url = add_query_arg('rrp_page', (int) $page, remove_query_arg('rrp_page'));
+
+        return '<a class="' . esc_attr(implode(' ', $classes)) . '" href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
     }
 
     private function render_schema_script($reviews, $summary)
