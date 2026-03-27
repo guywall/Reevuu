@@ -41,10 +41,13 @@ class RRP_Settings
             'brand_name'              => get_bloginfo('name'),
             'style_font_family'       => 'inherit',
             'style_form_background'   => '#fffef9',
+            'style_form_background_secondary' => '#f9f7f1',
             'style_card_background'   => '#ffffff',
             'style_accent_color'      => '#1f6f5f',
             'style_star_color'        => '#f59e0b',
             'style_text_color'        => '#0f172a',
+            'notification_recipients' => get_bloginfo('admin_email'),
+            'notification_ratings'    => array(1, 2, 3, 4, 5),
         );
     }
 
@@ -103,12 +106,33 @@ class RRP_Settings
                 'brand_name'              => sanitize_text_field($values['brand_name'] ?? $defaults['brand_name']),
                 'style_font_family'       => sanitize_text_field($values['style_font_family'] ?? $defaults['style_font_family']),
                 'style_form_background'   => sanitize_hex_color($values['style_form_background'] ?? $defaults['style_form_background']) ?: $defaults['style_form_background'],
+                'style_form_background_secondary' => sanitize_hex_color($values['style_form_background_secondary'] ?? $defaults['style_form_background_secondary']) ?: $defaults['style_form_background_secondary'],
                 'style_card_background'   => sanitize_hex_color($values['style_card_background'] ?? $defaults['style_card_background']) ?: $defaults['style_card_background'],
                 'style_accent_color'      => sanitize_hex_color($values['style_accent_color'] ?? $defaults['style_accent_color']) ?: $defaults['style_accent_color'],
                 'style_star_color'        => sanitize_hex_color($values['style_star_color'] ?? $defaults['style_star_color']) ?: $defaults['style_star_color'],
                 'style_text_color'        => sanitize_hex_color($values['style_text_color'] ?? $defaults['style_text_color']) ?: $defaults['style_text_color'],
+                'notification_recipients' => sanitize_textarea_field($values['notification_recipients'] ?? $defaults['notification_recipients']),
+                'notification_ratings'    => $this->sanitize_notification_ratings($values['notification_ratings'] ?? $defaults['notification_ratings']),
             ),
             $defaults
         );
+    }
+
+    private function sanitize_notification_ratings($ratings)
+    {
+        $ratings = is_array($ratings) ? $ratings : array();
+        $sanitized = array();
+
+        foreach ($ratings as $rating) {
+            $rating = (int) $rating;
+            if ($rating >= 1 && $rating <= 5) {
+                $sanitized[] = $rating;
+            }
+        }
+
+        $sanitized = array_values(array_unique($sanitized));
+        sort($sanitized);
+
+        return $sanitized;
     }
 }

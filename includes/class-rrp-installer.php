@@ -6,6 +6,8 @@ if (! defined('ABSPATH')) {
 
 class RRP_Installer
 {
+    const VERSION_OPTION = 'rrp_plugin_version';
+
     public static function activate()
     {
         global $wpdb;
@@ -60,6 +62,9 @@ class RRP_Installer
                 status VARCHAR(20) NOT NULL DEFAULT 'pending',
                 is_verified TINYINT(1) NOT NULL DEFAULT 0,
                 has_consent TINYINT(1) NOT NULL DEFAULT 0,
+                response_content LONGTEXT NULL,
+                response_author VARCHAR(191) NULL,
+                responded_at DATETIME NULL,
                 submission_ip VARCHAR(45) NULL,
                 user_agent TEXT NULL,
                 created_at DATETIME NOT NULL,
@@ -113,7 +118,17 @@ class RRP_Installer
             add_rewrite_rule('^' . preg_quote($slug, '/') . '$', 'index.php?rrp_google_feed=1', 'top');
         }
 
+        update_option(self::VERSION_OPTION, RRP_VERSION);
         flush_rewrite_rules();
+    }
+
+    public static function maybe_upgrade()
+    {
+        $installed_version = (string) get_option(self::VERSION_OPTION, '');
+
+        if ($installed_version !== RRP_VERSION) {
+            self::activate();
+        }
     }
 
     public static function table_names()

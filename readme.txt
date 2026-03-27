@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,9 @@ Features include:
 `[reevuu_reviews_gallery]`
 
 == Changelog ==
+
+= 1.1.0 =
+- Added moderation badges, admin replies, configurable review notification emails by rating, secondary gradient color control, and list/filter UI improvements
 
 = 1.0.3 =
 - Removed the review title field from the public form, moved the main review textarea below ratings, and added admin appearance controls

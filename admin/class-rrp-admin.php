@@ -25,9 +25,17 @@ class RRP_Admin
 
     public function register_menu()
     {
+        $counts = $this->repository->get_status_counts();
+        $pending_count = (int) ($counts['pending'] ?? 0);
+        $menu_label = __('ReevuuWP', 'reevuu-reviews');
+
+        if ($pending_count > 0) {
+            $menu_label .= ' <span class="awaiting-mod count-' . $pending_count . '"><span class="pending-count">' . $pending_count . '</span></span>';
+        }
+
         add_menu_page(
             __('ReevuuWP', 'reevuu-reviews'),
-            __('ReevuuWP', 'reevuu-reviews'),
+            $menu_label,
             'manage_options',
             'rrp-reviews',
             array($this, 'render_reviews_page'),
@@ -201,12 +209,15 @@ class RRP_Admin
         $review_id = absint($_POST['review_id'] ?? 0);
         $status = sanitize_key($_POST['status'] ?? '');
         $verified = empty($_POST['is_verified']) ? 0 : 1;
+        $response_content = wp_unslash($_POST['response_content'] ?? '');
 
         if ($review_id) {
             if ($status) {
                 $this->repository->update_review_status($review_id, $status);
             }
             $this->repository->set_verified($review_id, $verified);
+            $current_user = wp_get_current_user();
+            $this->repository->update_response($review_id, $response_content, $current_user ? $current_user->display_name : '');
         }
 
         $redirect = add_query_arg(
@@ -283,11 +294,25 @@ class RRP_Admin
                                     <p class="description"><?php esc_html_e('Use "inherit" to piggyback off your theme or Elementor typography. If Elementor already loads a Google Font, entering the same font family here will use it without ReevuuWP loading another copy.', 'reevuu-reviews'); ?></p>
                                     <div class="rrp-inline-inputs">
                                         <label><?php esc_html_e('Form background', 'reevuu-reviews'); ?> <input type="color" name="settings[style_form_background]" value="<?php echo esc_attr($settings['style_form_background']); ?>" /></label>
+                                        <label><?php esc_html_e('Gradient secondary', 'reevuu-reviews'); ?> <input type="color" name="settings[style_form_background_secondary]" value="<?php echo esc_attr($settings['style_form_background_secondary']); ?>" /></label>
                                         <label><?php esc_html_e('Card background', 'reevuu-reviews'); ?> <input type="color" name="settings[style_card_background]" value="<?php echo esc_attr($settings['style_card_background']); ?>" /></label>
                                         <label><?php esc_html_e('Accent/button', 'reevuu-reviews'); ?> <input type="color" name="settings[style_accent_color]" value="<?php echo esc_attr($settings['style_accent_color']); ?>" /></label>
                                         <label><?php esc_html_e('Star colour', 'reevuu-reviews'); ?> <input type="color" name="settings[style_star_color]" value="<?php echo esc_attr($settings['style_star_color']); ?>" /></label>
                                         <label><?php esc_html_e('Text colour', 'reevuu-reviews'); ?> <input type="color" name="settings[style_text_color]" value="<?php echo esc_attr($settings['style_text_color']); ?>" /></label>
                                     </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php esc_html_e('Email notifications', 'reevuu-reviews'); ?></th>
+                                <td class="rrp-stack">
+                                    <textarea class="large-text" rows="4" name="settings[notification_recipients]" placeholder="<?php esc_attr_e('one@example.com, two@example.com', 'reevuu-reviews'); ?>"><?php echo esc_textarea($settings['notification_recipients']); ?></textarea>
+                                    <p class="description"><?php esc_html_e('Enter one or more email addresses separated by commas or new lines.', 'reevuu-reviews'); ?></p>
+                                    <div class="rrp-inline-inputs">
+                                        <?php for ($rating = 1; $rating <= 5; $rating++) : ?>
+                                            <label><input type="checkbox" name="settings[notification_ratings][]" value="<?php echo esc_attr((string) $rating); ?>" <?php checked(in_array($rating, (array) $settings['notification_ratings'], true)); ?> /> <?php echo esc_html($rating . ' star'); ?></label>
+                                        <?php endfor; ?>
+                                    </div>
+                                    <p class="description"><?php esc_html_e('Emails will be sent only for reviews whose overall rating matches the selected star buckets.', 'reevuu-reviews'); ?></p>
                                 </td>
                             </tr>
                             <tr>
@@ -440,6 +465,13 @@ class RRP_Admin
                             <p><?php echo esc_html($review['review_content']); ?></p>
                         <?php endif; ?>
 
+                        <?php if (! empty($review['response_content'])) : ?>
+                            <div class="rrp-admin-response-preview">
+                                <strong><?php esc_html_e('Admin response', 'reevuu-reviews'); ?></strong>
+                                <p><?php echo esc_html($review['response_content']); ?></p>
+                            </div>
+                        <?php endif; ?>
+
                         <?php if (! empty($review['answers'])) : ?>
                             <dl class="rrp-answer-grid">
                                 <?php foreach ($review['answers'] as $answer) : ?>
@@ -483,6 +515,11 @@ class RRP_Admin
                             <label class="rrp-checkbox-inline">
                                 <input type="checkbox" name="is_verified" value="1" <?php checked(! empty($review['is_verified'])); ?> />
                                 <?php esc_html_e('Verified review', 'reevuu-reviews'); ?>
+                            </label>
+
+                            <label class="rrp-review-response-field">
+                                <?php esc_html_e('Admin response', 'reevuu-reviews'); ?>
+                                <textarea name="response_content" rows="4" placeholder="<?php esc_attr_e('Write a public response to this review', 'reevuu-reviews'); ?>"><?php echo esc_textarea($review['response_content'] ?? ''); ?></textarea>
                             </label>
 
                             <button type="submit" class="button button-primary"><?php esc_html_e('Update review', 'reevuu-reviews'); ?></button>

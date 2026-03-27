@@ -24,6 +24,7 @@ class RRP_Plugin
     public function run()
     {
         add_action('init', array($this, 'load_textdomain'));
+        add_action('init', array('RRP_Installer', 'maybe_upgrade'), 5);
 
         $this->admin->register();
         $this->public->register();

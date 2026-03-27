@@ -296,6 +296,7 @@ class RRP_Public
             'message' => $is_published ? $this->settings->get('success_message') : $this->settings->get('pending_message'),
             'errors'  => array(),
         );
+        $this->send_notification_email($review_id, $payload['review']);
         $this->submission_values = array();
     }
 
@@ -502,7 +503,6 @@ class RRP_Public
         <section class="rrp-list-wrap">
             <?php if ('1' === (string) $atts['show_search'] || '1' === (string) $atts['show_sort']) : ?>
                 <form method="get" class="rrp-list-controls">
-                    <input type="search" name="rrp_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search customer reviews', 'reevuu-reviews'); ?>" />
                     <?php if ('1' === (string) $atts['show_sort']) : ?>
                         <select name="rrp_sort">
                             <option value="newest" <?php selected($sort, 'newest'); ?>><?php esc_html_e('Most recent', 'reevuu-reviews'); ?></option>
@@ -511,6 +511,7 @@ class RRP_Public
                             <option value="lowest" <?php selected($sort, 'lowest'); ?>><?php esc_html_e('Lowest rating', 'reevuu-reviews'); ?></option>
                         </select>
                     <?php endif; ?>
+                    <input type="search" name="rrp_search" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search customer reviews', 'reevuu-reviews'); ?>" />
                     <button type="submit" class="rrp-button rrp-button-secondary"><?php esc_html_e('Search', 'reevuu-reviews'); ?></button>
                 </form>
             <?php endif; ?>
@@ -556,6 +557,12 @@ class RRP_Public
                                     <?php endif; ?>
                                     <?php if (! empty($review['review_content'])) : ?>
                                         <p><?php echo esc_html($review['review_content']); ?></p>
+                                    <?php endif; ?>
+                                    <?php if (! empty($review['response_content'])) : ?>
+                                        <div class="rrp-review-response">
+                                            <strong><?php echo esc_html($review['response_author'] ?: __('Admin response', 'reevuu-reviews')); ?></strong>
+                                            <p><?php echo esc_html($review['response_content']); ?></p>
+                                        </div>
                                     <?php endif; ?>
                                     <?php foreach ($review['answers'] as $answer) : ?>
                                         <div class="rrp-answer-line">
@@ -639,6 +646,12 @@ class RRP_Public
                         <?php endif; ?>
                         <?php if (! empty($review['review_content'])) : ?>
                             <p><?php echo esc_html(wp_trim_words($review['review_content'], 28)); ?></p>
+                        <?php endif; ?>
+                        <?php if (! empty($review['response_content'])) : ?>
+                            <div class="rrp-review-response">
+                                <strong><?php echo esc_html($review['response_author'] ?: __('Admin response', 'reevuu-reviews')); ?></strong>
+                                <p><?php echo esc_html(wp_trim_words($review['response_content'], 22)); ?></p>
+                            </div>
                         <?php endif; ?>
                         <?php if (! empty($review['media'][0]['thumb_url'])) : ?>
                             <img class="rrp-card-image" src="<?php echo esc_url($review['media'][0]['thumb_url']); ?>" alt="" />
@@ -855,6 +868,7 @@ class RRP_Public
 
         $css = ':root{'
             . '--rrp-form-bg:' . esc_html($settings['style_form_background']) . ';'
+            . '--rrp-form-bg-secondary:' . esc_html($settings['style_form_background_secondary']) . ';'
             . '--rrp-card-bg:' . esc_html($settings['style_card_background']) . ';'
             . '--rrp-accent:' . esc_html($settings['style_accent_color']) . ';'
             . '--rrp-star:' . esc_html($settings['style_star_color']) . ';'
@@ -863,6 +877,42 @@ class RRP_Public
             . '}';
 
         return $css;
+    }
+
+    private function send_notification_email($review_id, $review)
+    {
+        $recipients = preg_split('/[\r\n,]+/', (string) $this->settings->get('notification_recipients', ''));
+        $recipients = array_filter(array_map('trim', (array) $recipients));
+        $recipients = array_values(array_filter($recipients, 'is_email'));
+
+        if (! $recipients) {
+            return;
+        }
+
+        $enabled_ratings = array_map('intval', (array) $this->settings->get('notification_ratings', array()));
+        $rating_bucket = max(1, min(5, (int) round((float) ($review['overall_rating'] ?? 0))));
+
+        if ($enabled_ratings && ! in_array($rating_bucket, $enabled_ratings, true)) {
+            return;
+        }
+
+        $subject = sprintf(__('New %1$d-star review on %2$s', 'reevuu-reviews'), $rating_bucket, wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES));
+        $admin_url = admin_url('admin.php?page=rrp-reviews');
+        $body = array(
+            sprintf(__('A new review has been submitted on %s.', 'reevuu-reviews'), get_bloginfo('name')),
+            '',
+            sprintf(__('Reviewer: %s', 'reevuu-reviews'), $review['reviewer_name'] ?? ''),
+            sprintf(__('Email: %s', 'reevuu-reviews'), $review['reviewer_email'] ?? ''),
+            sprintf(__('Overall rating: %s/5', 'reevuu-reviews'), number_format_i18n((float) ($review['overall_rating'] ?? 0), 1)),
+            sprintf(__('Status: %s', 'reevuu-reviews'), ucfirst((string) ($review['status'] ?? 'pending'))),
+            '',
+            __('Review content:', 'reevuu-reviews'),
+            (string) ($review['review_content'] ?? ''),
+            '',
+            sprintf(__('Moderate or reply here: %s', 'reevuu-reviews'), $admin_url),
+        );
+
+        wp_mail($recipients, $subject, implode("\n", $body));
     }
 
     private function render_schema_script($reviews, $summary)

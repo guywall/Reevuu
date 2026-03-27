@@ -121,12 +121,15 @@ class RRP_Repository
                 'status'          => sanitize_key($review['status']),
                 'is_verified'     => empty($review['is_verified']) ? 0 : 1,
                 'has_consent'     => empty($review['has_consent']) ? 0 : 1,
+                'response_content'=> null,
+                'response_author' => null,
+                'responded_at'    => null,
                 'submission_ip'   => sanitize_text_field($review['submission_ip']),
                 'user_agent'      => sanitize_textarea_field($review['user_agent']),
                 'created_at'      => $now,
                 'updated_at'      => $now,
             ),
-            array('%d', '%s', '%s', '%s', '%s', '%f', '%s', '%d', '%d', '%s', '%s', '%s', '%s')
+            array('%d', '%s', '%s', '%s', '%s', '%f', '%s', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
         );
 
         if (! $inserted) {
@@ -351,6 +354,25 @@ class RRP_Repository
             ),
             array('id' => (int) $review_id),
             array('%d', '%s'),
+            array('%d')
+        );
+    }
+
+    public function update_response($review_id, $response_content, $response_author)
+    {
+        $response_content = trim((string) $response_content);
+        $data = array(
+            'response_content' => '' === $response_content ? null : wp_kses_post($response_content),
+            'response_author'  => '' === $response_content ? null : sanitize_text_field($response_author),
+            'responded_at'     => '' === $response_content ? null : current_time('mysql'),
+            'updated_at'       => current_time('mysql'),
+        );
+
+        return false !== $this->wpdb->update(
+            $this->tables['reviews'],
+            $data,
+            array('id' => (int) $review_id),
+            array('%s', '%s', '%s', '%s'),
             array('%d')
         );
     }

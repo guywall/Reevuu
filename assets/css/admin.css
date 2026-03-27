@@ -138,6 +138,23 @@
     border-radius: 8px;
 }
 
+.rrp-review-response-field {
+    flex: 1 1 100%;
+}
+
+.rrp-review-response-field textarea {
+    width: 100%;
+    min-height: 110px;
+}
+
+.rrp-admin-response-preview {
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-left: 4px solid #1d4ed8;
+    background: #eff6ff;
+    border-radius: 8px;
+}
+
 @media (max-width: 782px) {
     .rrp-search-form {
         flex-direction: column;
