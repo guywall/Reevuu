@@ -564,7 +564,7 @@ class RRP_Public
                                     </div>
                                 </td>
                                 <td data-label="<?php esc_attr_e('Rating', 'reevuu-reviews'); ?>"><?php echo $this->render_stars((float) $review['overall_rating']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-                                <td data-label="<?php esc_attr_e('Date', 'reevuu-reviews'); ?>"><?php echo esc_html(mysql2date(get_option('date_format'), $review['created_at'])); ?></td>
+                                <td data-label="<?php esc_attr_e('Date', 'reevuu-reviews'); ?>"><?php echo esc_html($this->format_frontend_review_date($review['created_at'])); ?></td>
                                 <td data-label="<?php esc_attr_e('Review', 'reevuu-reviews'); ?>">
                                     <?php if (! empty($review['review_title'])) : ?>
                                         <strong><?php echo esc_html($review['review_title']); ?></strong>
@@ -967,6 +967,11 @@ class RRP_Public
         );
 
         wp_mail($recipients, $subject, implode("\n", $body));
+    }
+
+    private function format_frontend_review_date($date)
+    {
+        return mysql2date('F Y', $date);
     }
 
     private function render_schema_script($reviews, $summary)

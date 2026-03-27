@@ -4,7 +4,7 @@ Tags: reviews, testimonials, ratings, customer reviews, turnstile
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Features include:
 `[reevuu_reviews_badge]`
 
 == Changelog ==
+
+= 1.1.6 =
+ - Changed frontend review dates to month-and-year format
 
 = 1.1.5 =
  - Removed mobile zebra/hover table styling conflicts and changed full-star review rating text from decimal output to whole-number `/5`
