@@ -25,6 +25,7 @@ class RRP_Admin
 
     public function register_menu()
     {
+        $capability = $this->get_admin_capability();
         $counts = $this->repository->get_status_counts();
         $pending_count = (int) ($counts['pending'] ?? 0);
         $menu_label = __('ReevuuWP', 'reevuu-reviews');
@@ -36,7 +37,7 @@ class RRP_Admin
         add_menu_page(
             __('ReevuuWP', 'reevuu-reviews'),
             $menu_label,
-            'manage_options',
+            $capability,
             'rrp-reviews',
             array($this, 'render_reviews_page'),
             'dashicons-star-filled',
@@ -47,7 +48,7 @@ class RRP_Admin
             'rrp-reviews',
             __('Review Moderation', 'reevuu-reviews'),
             __('Review Moderation', 'reevuu-reviews'),
-            'manage_options',
+            $capability,
             'rrp-reviews',
             array($this, 'render_reviews_page')
         );
@@ -56,7 +57,7 @@ class RRP_Admin
             'rrp-reviews',
             __('Settings', 'reevuu-reviews'),
             __('Settings', 'reevuu-reviews'),
-            'manage_options',
+            $capability,
             'rrp-review-settings',
             array($this, 'render_settings_page')
         );
@@ -82,7 +83,7 @@ class RRP_Admin
 
     public function handle_save_settings()
     {
-        if (! current_user_can('manage_options')) {
+        if (! current_user_can($this->get_admin_capability())) {
             wp_die(esc_html__('You do not have permission to manage reviews settings.', 'reevuu-reviews'));
         }
 
@@ -200,7 +201,7 @@ class RRP_Admin
 
     public function handle_review_action()
     {
-        if (! current_user_can('manage_options')) {
+        if (! current_user_can($this->get_admin_capability())) {
             wp_die(esc_html__('You do not have permission to manage reviews.', 'reevuu-reviews'));
         }
 
@@ -234,7 +235,7 @@ class RRP_Admin
 
     public function render_settings_page()
     {
-        if (! current_user_can('manage_options')) {
+        if (! current_user_can($this->get_admin_capability())) {
             return;
         }
 
@@ -394,7 +395,7 @@ class RRP_Admin
 
     public function render_reviews_page()
     {
-        if (! current_user_can('manage_options')) {
+        if (! current_user_can($this->get_admin_capability())) {
             return;
         }
 
@@ -606,5 +607,10 @@ class RRP_Admin
             </div>
         </div>
         <?php
+    }
+
+    private function get_admin_capability()
+    {
+        return (string) apply_filters('rrp_admin_capability', 'edit_posts');
     }
 }
