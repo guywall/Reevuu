@@ -619,7 +619,9 @@ class RRP_Public
                                         <div class="rrp-inline-gallery">
                                             <?php foreach ($review['media'] as $media) : ?>
                                                 <?php if (! empty($media['thumb_url'])) : ?>
-                                                    <img src="<?php echo esc_url($media['thumb_url']); ?>" alt="" />
+                                                    <a href="<?php echo esc_url($media['image_url'] ?: $media['thumb_url']); ?>" class="rrp-lightbox-trigger rrp-inline-gallery-item" data-rrp-lightbox="review-images">
+                                                        <img src="<?php echo esc_url($media['thumb_url']); ?>" alt="<?php echo esc_attr(sprintf(__('Review image from %s', 'reevuu-reviews'), $review['reviewer_name'])); ?>" />
+                                                    </a>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>
                                         </div>
@@ -702,7 +704,9 @@ class RRP_Public
                             </div>
                         <?php endif; ?>
                         <?php if (! empty($review['media'][0]['thumb_url'])) : ?>
-                            <img class="rrp-card-image" src="<?php echo esc_url($review['media'][0]['thumb_url']); ?>" alt="" />
+                            <a href="<?php echo esc_url($review['media'][0]['image_url'] ?: $review['media'][0]['thumb_url']); ?>" class="rrp-lightbox-trigger rrp-card-image-link" data-rrp-lightbox="review-images">
+                                <img class="rrp-card-image" src="<?php echo esc_url($review['media'][0]['thumb_url']); ?>" alt="<?php echo esc_attr(sprintf(__('Review image from %s', 'reevuu-reviews'), $review['reviewer_name'])); ?>" />
+                            </a>
                         <?php endif; ?>
                     </article>
                 <?php endforeach; ?>
@@ -769,7 +773,7 @@ class RRP_Public
             <h3><?php echo esc_html($atts['title']); ?></h3>
             <div class="rrp-gallery-grid">
                 <?php foreach ($image_ids as $attachment_id) : ?>
-                    <a href="<?php echo esc_url((string) wp_get_attachment_image_url($attachment_id, 'large')); ?>" class="rrp-gallery-item">
+                    <a href="<?php echo esc_url((string) wp_get_attachment_image_url($attachment_id, 'large')); ?>" class="rrp-gallery-item rrp-lightbox-trigger" data-rrp-lightbox="review-images">
                         <?php echo wp_get_attachment_image($attachment_id, 'medium_large'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </a>
                 <?php endforeach; ?>
